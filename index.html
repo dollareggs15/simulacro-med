@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Simulacro Med</title>
+<meta name="description" content="Sube tus apuntes y practica con preguntas tipo examen de medicina.">
+<meta name="theme-color" content="#1f6b5a">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Simulacro">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f4; --paper:#ffffff; --ink:#15211e; --muted:#5b6964; --line:#d9e0dd;
+  --accent:#1f6b5a; --accent-ink:#ffffff; --accent-soft:#e3efeb;
+  --ok:#1d7a46; --ok-soft:#e2f3e8; --bad:#b4372b; --bad-soft:#fbe7e4;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0f1513; --paper:#161e1b; --ink:#e4ece9; --muted:#93a39d; --line:#2a3632;
+  --accent:#5cc2a6; --accent-ink:#0b1311; --accent-soft:#1b2c27;
+  --ok:#5ccf8c; --ok-soft:#16281e; --bad:#f08273; --bad-soft:#2e1a17; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlight-color:transparent}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:22px 48px;display:grid;gap:18px}
+header{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,8vw,40px);line-height:1;margin:2px 0 0}
+section.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:14px}
+h2{font-family:var(--display);font-weight:600;font-size:18px;margin:0}
+label{font-weight:500;font-size:13px}
+input[type=text],textarea,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
+textarea{min-height:170px;resize:vertical}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:4px}
+.tabs button{flex:1;border:0;background:transparent;padding:8px}
+.tabs button[aria-selected=true]{background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.08);color:var(--accent)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:420px){.grid3{grid-template-columns:1fr 1fr}.grid3 .field:last-child{grid-column:1/-1}}
+.field{display:grid;gap:4px;min-width:0}
+button{font:inherit;font-weight:600;font-size:15px;border-radius:10px;padding:12px 16px;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.wide{width:100%}
+button:disabled{opacity:.55;cursor:default}
+.drop{border:1.5px dashed var(--line);border-radius:10px;padding:22px 14px;text-align:center;color:var(--muted);display:grid;gap:8px;justify-items:center}
+.drop strong{color:var(--ink)}
+.file-chip{font-family:var(--mono);font-size:13px;background:var(--accent-soft);color:var(--accent);padding:4px 10px;border-radius:99px;word-break:break-all}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.status{font-family:var(--mono);font-size:13px;color:var(--muted);min-height:1.4em;margin:0}
+.status.err{color:var(--bad)}
+.meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tag{background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:99px}
+.bar{height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.q{font-size:17px;font-weight:500;margin:0}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;font-weight:400;width:100%;background:var(--bg)}
+.opt b{font-family:var(--mono);font-weight:500;color:var(--muted);min-width:1.2em}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.expl{border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin:0}
+.expl strong{display:block;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.expl.ok strong{color:var(--ok)} .expl.no strong{color:var(--bad)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.score{font-family:var(--display);font-weight:800;font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.list{display:grid;gap:0;margin:0;padding:0;list-style:none}
+.list li{border-top:1px solid var(--line);padding-block:10px;font-size:14px}
+.list .r{color:var(--ok);font-weight:500}
+.hist button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;border:0;padding:10px 0;background:transparent;font-weight:500}
+.hist span:last-child{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.spinner{width:18px;height:18px;border:2px solid var(--accent-soft);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;display:inline-block;vertical-align:-4px;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.bar i{transition:none}.spinner{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><span class="eyebrow">Repaso para exámenes de medicina</span><h1>Simulacro Med</h1></div>
+    <button id="install" hidden>Instalar app</button>
+  </header>
+
+  <section class="panel" aria-labelledby="h-notes">
+    <h2 id="h-notes">Tus apuntes</h2>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-text" aria-selected="true">Pegar texto</button>
+      <button role="tab" id="tab-file" aria-selected="false">Foto o PDF</button>
+    </div>
+    <div id="pane-text"><textarea id="notes" aria-label="Apuntes" placeholder="Pega aquí el tema que quieres repasar…"></textarea></div>
+    <div id="pane-file" hidden>
+      <div class="drop">
+        <strong>Sube una foto de tu cuaderno o un PDF</strong>
+        <span class="hint">JPG, PNG o PDF de hasta 3 MB</span>
+        <input type="file" id="file" accept="image/*,application/pdf" hidden>
+        <button id="pick">Elegir archivo</button>
+        <span id="fileName" class="file-chip" hidden></span>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label for="count">Preguntas</label>
+        <select id="count"><option>5</option><option selected>10</option><option>15</option></select></div>
+      <div class="field"><label for="style">Tipo</label>
+        <select id="style"><option value="mixto">Mixto</option><option value="caso">Casos clínicos</option><option value="directa">Directas</option></select></div>
+      <div class="field"><label for="level">Dificultad</label>
+        <select id="level"><option value="básica">Básica</option><option value="intermedia" selected>Intermedia</option><option value="alta">Alta</option></select></div>
+    </div>
+    <div class="field" id="codeField"><label for="code">Código de acceso</label>
+      <input type="text" id="code" autocomplete="off" autocapitalize="characters" placeholder="Si tienes uno, escríbelo aquí"></div>
+    <button class="primary wide" id="gen">Generar simulacro</button>
+    <p class="status" id="status" role="status"></p>
+  </section>
+
+  <section class="panel" id="quiz" aria-live="polite"></section>
+
+  <section class="panel" id="histPanel" hidden>
+    <h2>Mis simulacros</h2>
+    <div class="list hist" id="hist"></div>
+  </section>
+</div>
+
+<script>
+const SAMPLE_QUIZ = {titulo:"Ejemplo · Preeclampsia", preguntas:[
+  {tema:"Preeclampsia", pregunta:"Primigesta de 34 semanas con PA 165/112 mmHg, cefalea intensa y plaquetas de 85 000. ¿Qué fármaco se indica para prevenir convulsiones?",
+   opciones:["Diazepam","Sulfato de magnesio","Fenitoína","Labetalol"], correcta:1,
+   explicacion:"El sulfato de magnesio es el fármaco de elección para prevenir y tratar la eclampsia. El labetalol baja la presión pero no previene convulsiones."},
+  {tema:"Preeclampsia", pregunta:"Durante la infusión de sulfato de magnesio, ¿cuál es el primer signo clínico de toxicidad que se debe vigilar?",
+   opciones:["Taquicardia","Hiperreflexia","Pérdida del reflejo rotuliano","Poliuria"], correcta:2,
+   explicacion:"La abolición del reflejo rotuliano aparece antes que la depresión respiratoria. Si aparece, se suspende la infusión y se considera gluconato de calcio."},
+  {tema:"Preeclampsia", pregunta:"¿Cuál es el tratamiento definitivo de la preeclampsia?",
+   opciones:["Antihipertensivos orales","Reposo absoluto","Terminar el embarazo","Corticoides"], correcta:2,
+   explicacion:"La enfermedad depende de la placenta, así que solo se resuelve con el parto. Los corticoides se usan para la maduración pulmonar fetal."}
+]};
+
+const $ = id => document.getElementById(id);
+const L = "ABCDEFGH";
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+let current = SAMPLE_QUIZ, idx = 0, picked = null, answers = [], mode = "text", fileData = null;
+
+$("notes").value = store.get("notes", "");
+$("code").value = store.get("code", "");
+$("notes").oninput = () => store.set("notes", $("notes").value);
+$("code").oninput = () => store.set("code", $("code").value);
+
+function setMode(m){
+  mode = m;
+  $("tab-text").setAttribute("aria-selected", m==="text"); $("tab-file").setAttribute("aria-selected", m==="file");
+  $("pane-text").hidden = m!=="text"; $("pane-file").hidden = m!=="file";
+}
+$("tab-text").onclick = () => setMode("text");
+$("tab-file").onclick = () => setMode("file");
+$("pick").onclick = () => $("file").click();
+
+// Las fotos se reducen en el celular para que suban rápido
+function compressImage(file){
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const max = 1600, s = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      resolve({ data: c.toDataURL("image/jpeg", 0.82).split(",")[1], mime: "image/jpeg" });
+    };
+    img.onerror = () => reject(new Error("No se pudo leer la imagen."));
+    img.src = url;
+  });
+}
+function readBase64(file){
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve({ data: String(r.result).split(",")[1], mime: file.type });
+    r.onerror = () => reject(new Error("No se pudo leer el archivo."));
+    r.readAsDataURL(file);
+  });
+}
+$("file").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const st = $("status"); st.className = "status";
+  try {
+    if (f.type === "application/pdf") {
+      if (f.size > 3*1024*1024) throw new Error("El PDF pesa más de 3 MB. Sube solo las páginas del tema.");
+      fileData = await readBase64(f);
+    } else if (f.type.startsWith("image/")) {
+      fileData = await compressImage(f);
+    } else throw new Error("Ese tipo de archivo no se puede usar. Sube una foto o un PDF.");
+    $("fileName").textContent = f.name; $("fileName").hidden = false; st.textContent = "";
+  } catch(err){ fileData = null; $("fileName").hidden = true; st.className = "status err"; st.textContent = err.message; }
+};
+
+function esc(s){ const d=document.createElement("div"); d.textContent=String(s ?? ""); return d.innerHTML; }
+
+function render(){
+  const qs = current.preguntas, el = $("quiz");
+  if (idx >= qs.length) return renderEnd();
+  const q = qs[idx], answered = picked !== null;
+  el.innerHTML = `
+    <div class="meta"><span>${esc(current.titulo)}</span><span>${idx+1} / ${qs.length}</span></div>
+    <div class="bar"><i style="width:${Math.round(idx/qs.length*100)}%"></i></div>
+    ${q.tema?`<div><span class="meta"><span class="tag">${esc(q.tema)}</span></span></div>`:""}
+    <p class="q">${esc(q.pregunta)}</p>
+    <div class="opts">${q.opciones.map((o,i)=>{
+      let c="opt"; if(answered){ if(i===q.correcta)c+=" right"; else if(i===picked)c+=" wrong"; }
+      return `<button class="${c}" data-i="${i}" ${answered?"disabled":""}><b>${L[i]}</b><span>${esc(o)}</span></button>`;}).join("")}</div>
+    ${answered?`<p class="expl ${picked===q.correcta?"ok":"no"}"><strong>${picked===q.correcta?"Correcto":"Incorrecto · era la "+L[q.correcta]}</strong>${esc(q.explicacion)}</p>
+      <button class="primary wide" id="next">${idx+1<qs.length?"Siguiente":"Ver resultado"}</button>`:""}`;
+  el.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ picked=+b.dataset.i; answers[idx]=picked; render(); });
+  const n=$("next"); if(n) n.onclick=()=>{ idx++; picked=null; render(); el.scrollIntoView({block:"start"}); };
+}
+
+function renderEnd(){
+  const qs = current.preguntas;
+  const ok = qs.filter((q,i)=>answers[i]===q.correcta).length;
+  const wrong = qs.filter((q,i)=>answers[i]!==q.correcta);
+  if (current.id) { const h = store.get("hist", []); const it = h.find(x=>x.id===current.id); if (it){ it.mejor = Math.max(it.mejor||0, ok); store.set("hist", h); renderHist(); } }
+  $("quiz").innerHTML = `
+    <div class="meta"><span>${esc(current.titulo)}</span><span>${Math.round(ok/qs.length*100)}%</span></div>
+    <div class="score">${ok}<span style="color:var(--muted);font-size:.5em">/${qs.length}</span></div>
+    ${wrong.length?`<h2>Para repasar</h2><ul class="list">${wrong.map(q=>`<li>${esc(q.pregunta)}<br><span class="r">${esc(q.opciones[q.correcta])}</span><br><span class="hint">${esc(q.explicacion)}</span></li>`).join("")}</ul>`:`<p class="hint">Todas correctas. Sube la dificultad o genera otro simulacro.</p>`}
+    <div class="actions"><button id="again">Repetir</button><button id="share">Compartir resultado</button></div>`;
+  $("again").onclick=()=>{ idx=0; picked=null; answers=[]; render(); };
+  $("share").onclick=async()=>{
+    const t = `Saqué ${ok}/${qs.length} en "${current.titulo}" con Simulacro Med 🩺 ${location.origin}`;
+    try { if (navigator.share) await navigator.share({ text: t }); else { await navigator.clipboard.writeText(t); $("share").textContent = "Copiado"; } } catch {}
+  };
+}
+
+function renderHist(){
+  const h = store.get("hist", []);
+  $("histPanel").hidden = !h.length;
+  $("hist").innerHTML = h.map(x=>`<button data-id="${x.id}"><span>${esc(x.titulo)}</span><span>${x.mejor!=null?x.mejor+"/"+x.preguntas.length:x.preguntas.length+" preg."}</span></button>`).join("");
+  $("hist").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    current = store.get("hist", []).find(x=>x.id===b.dataset.id); idx=0; picked=null; answers=[]; render();
+    $("quiz").scrollIntoView({behavior:"smooth", block:"start"});
+  });
+}
+
+$("gen").onclick = async () => {
+  const st = $("status"), btn = $("gen");
+  const texto = mode==="text" ? $("notes").value.trim() : "";
+  if (mode==="text" && texto.length < 80){ st.className="status err"; st.textContent="Pega un poco más de apuntes (al menos un párrafo)."; return; }
+  if (mode==="file" && !fileData){ st.className="status err"; st.textContent="Primero elige una foto o PDF."; return; }
+  btn.disabled = true; st.className="status"; st.innerHTML = `<span class="spinner"></span>Generando tu simulacro… unos 20-40 segundos`;
+  try {
+    const r = await fetch("/api/generar", { method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ texto, archivo: mode==="file"?fileData.data:undefined, mime: mode==="file"?fileData.mime:undefined,
+        n: $("count").value, tipo: $("style").value, nivel: $("level").value, codigo: $("code").value }) });
+    const data = await r.json().catch(()=>({}));
+    if (!r.ok) throw new Error(data.error || "No se pudo generar. Revisa tu internet e intenta de nuevo.");
+    const tema = data.preguntas[0]?.tema || "Simulacro";
+    const fecha = new Date().toLocaleDateString("es", { day:"numeric", month:"short" });
+    current = { id: String(Date.now()), titulo: `${tema} · ${fecha}`, preguntas: data.preguntas };
+    const h = store.get("hist", []); h.unshift(current); store.set("hist", h.slice(0, 20)); renderHist();
+    idx=0; picked=null; answers=[]; st.textContent = `Listo: ${data.preguntas.length} preguntas.`;
+    render(); $("quiz").scrollIntoView({behavior:"smooth", block:"start"});
+  } catch(err){ st.className="status err"; st.textContent = err.message; }
+  finally { btn.disabled = false; }
+};
+
+// Instalar como app
+let deferred = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; $("install").hidden = false; });
+$("install").onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice; deferred = null; $("install").hidden = true; };
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});
+
+render(); renderHist();
+</script>
+</body>
+</html>
